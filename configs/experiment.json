@@ -1,0 +1,36 @@
+{
+  "name": "SARG-GRU",
+  "datasets": ["HUST", "MATR", "TJU_NCA", "Stanford_2", "CALB", "CALCE", "Tongji3"],
+  "baselines": ["DLinear", "MixLinear", "PatchTST", "iTransformer", "ModernTCN", "TimeMixer", "TimeMixerPP"],
+  "variants": ["full", "no_ordered_differences_and_gating", "time_anchors", "no_voltage_branch"],
+  "seeds": [2025, 2026, 2027],
+  "split": {"train": 0.7, "val": 0.15, "test": 0.15, "seed": 2025},
+  "input": {"length": 300, "channels": ["elapsed_time_seconds", "voltage_V", "current_A"]},
+  "anchor": {
+    "count": 8,
+    "width_multiplier": 1.0,
+    "common_interval_quantile": 0.05,
+    "common_min_cycle_coverage": 0.8,
+    "fallback_quantiles": [0.05, 0.95],
+    "cutoff_sigma": 2.0
+  },
+  "training": {
+    "max_epochs": 300,
+    "patience": 50,
+    "batch_size": 512,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "gradient_clip": 5.0,
+    "precision": "float32"
+  },
+  "architecture": {
+    "DLinear": {"latent_length": 64, "individual": false, "micro_batch_size": 512},
+    "MixLinear": {"latent_length": 64, "period_len": 4, "lpf": 16, "alpha": 0.5, "micro_batch_size": 512},
+    "PatchTST": {"d_model": 64, "d_ff": 128, "e_layers": 2, "n_heads": 4, "patch_len": 20, "stride": 10, "dropout": 0.1, "micro_batch_size": 512},
+    "iTransformer": {"d_model": 64, "d_ff": 128, "e_layers": 2, "n_heads": 4, "dropout": 0.1, "use_norm": false, "micro_batch_size": 512},
+    "ModernTCN": {"dims": [32, 64], "num_blocks": [1, 1], "large_size": [31, 15], "small_size": [5, 5], "patch_size": 8, "patch_stride": 4, "ffn_ratio": 4, "dropout": 0.1, "micro_batch_size": 512},
+    "TimeMixer": {"d_model": 64, "d_ff": 128, "e_layers": 2, "down_sampling_layers": 2, "down_sampling_window": 2, "moving_avg": 25, "dropout": 0.1, "micro_batch_size": 512},
+    "TimeMixerPP": {"d_model": 64, "d_ff": 128, "e_layers": 2, "n_heads": 4, "top_k": 3, "n_kernels": 3, "down_sampling_layers": 2, "down_sampling_window": 2, "dropout": 0.1, "micro_batch_size": 128}
+  },
+  "bootstrap_repeats": 2000
+}
